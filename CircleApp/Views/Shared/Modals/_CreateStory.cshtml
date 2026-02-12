@@ -1,0 +1,37 @@
+﻿<div class="hidden lg:p-20" id="create-story" uk-modal="">
+    <div class="uk-modal-dialog tt relative mx-auto w-full overflow-hidden rounded-lg bg-white p-7 shadow-xl md:w-[520px]">
+
+        <div class="-m-7 mb-0 border-b py-3 text-center dark:border-slate-700">
+            <h2 class="text-sm font-medium">Create Story</h2>
+            <button type="button" class="button__ico uk-modal-close absolute right-0 top-0 m-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="mt-7 space-y-5">
+            <form>
+                <div>
+                    <div class="w-full h-72 relative border1 rounded-lg overflow-hidden bg-[url('../images/ad_pattern.png')] bg-repeat">
+                        <label class="-translate-x-1/2 absolute bottom-0 left-1/2 z-10 flex w-full cursor-pointer flex-col items-center justify-center bg-gradient-to-t from-gray-700/60 pb-6 pt-10">
+                            <input id="createStatusUrl" name="uploadedContent" type="file" accept="image/png, image/jpeg" />
+                            <ion-icon name="image" class="text-3xl text-teal-600"></ion-icon>
+                            <span class="mt-2 text-white">Browse to Upload image</span>
+
+                        </label>
+                        <img />
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-start gap-2">
+                        <ion-icon name="time-outline" class="rounded-full bg-blue-50 text-3xl text-teal-600"></ion-icon>
+                        <p class="text-sm font-medium text-gray-500">Yout Status will be available <br /> for <span class="text-gray-800">24 Hours</span></p>
+                    </div>
+                    <button type="submit" class="button bg-blue-500 px-8 text-white">Create</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
