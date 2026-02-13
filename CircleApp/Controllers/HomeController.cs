@@ -23,6 +23,7 @@ namespace CircleApp.Controllers
             var allPosts = await _context.Posts
                 .Include(n => n.User)
                 .Include(n => n.Likes)
+                .Include(n => n.Favorites)
                 .Include(n => n.Comments).ThenInclude(n => n.User)
                 .OrderByDescending(n => n.DateCreated)
                 .ToListAsync();
@@ -99,6 +100,35 @@ namespace CircleApp.Controllers
                     UserId = loggedInUserId
                 };
                 await _context.Likes.AddAsync(newLike);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TogglePostFavorite(PostFavoriteVM postFavoriteVM)
+        {
+            int loggedInUserId = 1;
+
+            //check if user has already favorited the post
+            var favorite = await _context.Favorites
+                .Where(l => l.PostId == postFavoriteVM.PostId && l.UserId == loggedInUserId)
+                .FirstOrDefaultAsync();
+
+            if (favorite != null)
+            {
+                _context.Favorites.Remove(favorite);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var newFavorite = new Favorite()
+                {
+                    PostId = postFavoriteVM.PostId,
+                    UserId = loggedInUserId
+                };
+                await _context.Favorites.AddAsync(newFavorite);
                 await _context.SaveChangesAsync();
             }
 
