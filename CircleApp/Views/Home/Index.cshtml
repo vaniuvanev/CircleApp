@@ -1,4 +1,6 @@
-﻿<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
+﻿@model List<Post>
+
+<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
     <div class="mx-auto max-w-[1065px] gap-12 lg:flex 2xl:gap-16" id="js-oversized">
         <div class="mx-auto max-w-[680px]">
             @* stories *@
@@ -66,115 +68,31 @@
 
                 </div>
 
-                <div class="border1 space-y-4 rounded-xl bg-white p-2 text-sm font-medium shadow-sm md:p-4" style="width: 580px;">
-                    Currently, there are no posts available. Would you like to create the first one?
-                </div>
-
-                <div class="border1 rounded-xl bg-white text-sm font-medium shadow-sm">
-
-                    @* Post heading *@
-                    <div class="flex gap-3 p-2.5 text-sm font-medium sm:p-4">
-                        <a>
-                            <img src="~/images/avatar/user.png" class="h-9 w-9 rounded-full" />
-                        </a>
-                        <div class="flex-1">
-                            <a>
-                                <h4 class="text-black">Ervis Trupja</h4>
-                                <div class="text-xs text-gray-500/80">1 day ago</div>
-                            </a>
-                        </div>
-
-                        <div class="-mr-1">
-                            <button type="button" class="button-icon h-8 w-8"> <ion-icon class="text-xl" name="ellipsis-horizontal"></ion-icon> </button>
-                            <div class="w-[245px]" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
-                                <form>
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="icon-link hover:!bg-red-50">
-                                        <ion-icon name="lock-closed-outline"></ion-icon>  Set as private
-                                    </button>
-                                </form>
-
-                                <hr>
-                                <form asp-controller="Home" asp-action="Delete">
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="icon-link text-red-400 hover:!bg-red-50">
-                                        <ion-icon name="trash-bin-outline"></ion-icon>  Delete Post
-                                    </button>
-                                </form>
-                                <form asp-controller="Home" asp-action="Report">
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="icon-link hover:!bg-red-50">
-                                        <ion-icon class="shrink-0 text-xl" name="flag-outline"></ion-icon>  Report
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                @if (Model.Count == 0)
+                {
+                    <div class="border1 space-y-4 rounded-xl bg-white p-2 text-sm font-medium shadow-sm md:p-4" style="width: 580px;">
+                        Currently, there are no posts available. Would you like to create the first one?
                     </div>
+                }
+                else
+                {
+                    @foreach (var post in Model)
+                    {
+                        <partial name="Home/_Post" model="post" />
+                    }
+                }
 
-                    @* Post content *@
-                    <a>
-                        <div class="w-full p-2.5 pt-0 sm:px-4">
-                            <p class="font-normal">
-                                This is our first status from the #circleapp where you can share text or pictures with your friends and family...
-                            </p>
-                        </div>
-                    </a>
 
-                    <a>
-                        <div class="relative h-full w-full sm:px-4 lg:h-96">
-                            <img src="~/images/placeholders/post-placeholder.jpg" class="h-full w-full object-cover sm:rounded-lg" />
-                        </div>
-                    </a>
 
-                    @* Icons *@
-                    <div class="flex items-center gap-4 p-2.5 text-xs font-semibold sm:p-4">
-
-                        <div class="flex items-center gap-2.5">
-                            <a class="button-icon bg-red-100 text-red-500">
-                                <ion-icon class="text-lg" name="heart"></ion-icon>
-                            </a>
-                            <a href="#">24</a>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <a class="button-icon">
-                                <ion-icon class="text-lg" name="chatbubble-ellipses-outline"></ion-icon>
-                            </a>
-                            <a href="#">5</a>
-                        </div>
-
-                        <div class="ml-auto"></div>
-
-                        <div>
-                            <a class="button-icon ml-auto">
-                                <ion-icon class="text-lg" name="bookmark-outline"></ion-icon>
-                            </a>
-                        </div>
-                    </div>
-
-                    @* Add comment section *@
-                    <div>
-                        <div class="flex items-center gap-1 border-t border-gray-100 p-2.5 sm:px-4 sm:py-3">
-                            <img src="~/images/avatar/user.png" class="h-6 w-6 rounded-full" />
-
-                            <div class="relative h-10 flex-1 overflow-hidden">
-                                <textarea placeholder="Add Comment...." rows="1" class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"></textarea>
-                            </div>
-
-                            <button class="bg-secondery rounded-full px-3.5 py-1.5 text-sm">Comment</button>
-
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="flex-1">
             <div class="sm:grid-cols-2 lg:space-y-4 lg:pb-8 max-lg:grid max-lg:gap-6">
                 <div class="box p-5 px-6">
-                    <partial name="Sidebar/_SuggestedFriends"></partial>
+                    <partial name="Sidebar/_SuggestedFriends" />
                 </div>
                 <div class="box border1 p-5 px-6">
-                    <partial name="Sidebar/_TrendsForYou"></partial>
+                    <partial name="Sidebar/_TrendsForYou" />
                 </div>
             </div>
         </div>
@@ -182,4 +100,4 @@
 </main>
 
 <partial name="Modals/_CreateStory"></partial>
-<partial name="Modals/_CreateStatus"></partial>
+<partial name="Modals/_CreateStatus" model="new PostVM()"></partial>
