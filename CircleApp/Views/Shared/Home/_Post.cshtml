@@ -1,6 +1,6 @@
 ﻿@model Post
 
-@{
+@{ 
     TimeSpan timeSpanSincePosted = DateTime.UtcNow.Subtract(Model.DateCreated);
 
     string displayTime = timeSpanSincePosted switch
@@ -79,11 +79,11 @@
             <form asp-controller="Home" asp-action="TogglePostLike">
                 <input type="hidden" name="postId" value="@Model.Id" />
                 <button type="submit" class="button-icon @(Model.Likes.Any(n => n.UserId == 1) ? "text-red-500 bg-red-100" : "")">
-                    <ion-icon class="text-lg"
+                    <ion-icon class="text-lg" 
                               name="@(Model.Likes.Any(n => n.UserId == 1) ? "heart" : "heart-outline")"></ion-icon>
                 </button>
             </form>
-
+            
             <a href="#">@Model.Likes.Count</a>
         </div>
 
@@ -93,7 +93,7 @@
             <a class="button-icon">
                 <ion-icon class="text-lg" name="chatbubble-ellipses-outline"></ion-icon>
             </a>
-            <a href="#">5</a>
+            <a href="#">@Model.Comments.Count</a>
         </div>
 
         <div class="ml-auto"></div>
@@ -107,15 +107,74 @@
 
     @* Add comment section *@
     <div>
-        <div class="flex items-center gap-1 border-t border-gray-100 p-2.5 sm:px-4 sm:py-3">
-            <img src="~/images/avatar/user.png" class="h-6 w-6 rounded-full" />
 
-            <div class="relative h-10 flex-1 overflow-hidden">
-                <textarea placeholder="Add Comment...." rows="1" class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"></textarea>
-            </div>
+        <div  class="relative space-y-3 border-t border-gray-100 p-2.5 font-normal">
 
-            <button class="bg-secondery rounded-full px-3.5 py-1.5 text-sm">Comment</button>
+            @foreach(var comment in Model.Comments.OrderByDescending(n => n.DateCreated).Take(3))
+            {
+                TimeSpan commentTimeSpanSincePosted = DateTime.UtcNow.Subtract(comment.DateCreated);
+
+                string commentDisplayTime = commentTimeSpanSincePosted switch
+                {
+                    var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+                    var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+                    var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+                    _ => "Just now"
+                };
+
+                <div class="relative flex items-start gap-3">
+                    <a>
+                        <img src="@(comment.User.ProfilePictureUrl ?? "~/images/avatar/user.png")" class="mt-1 h-6 w-6 rounded-full" />
+                    </a>
+                    <div class="flex-1">
+                        <div class="justify-content-between flex">
+                            <a class="inline-block flex-grow font-medium text-black">
+                                @comment.User.FullName
+                            </a>
+                            <small>@commentDisplayTime</small>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <p class="mt-0.5">
+                                @comment.Content
+                            </p>
+
+                            <form asp-controller="Home" asp-action="RemovePostComment">
+                                <input type="hidden"  name="commentId" value="@comment.Id"/>
+                                <button type="submit" class="ml-2 text-xs text-red-500" title="Remove post comment">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            }
+
+            @if(Model.Comments.Count >= 3)
+            {
+                <div class="p-1.5">
+                    <a>
+                        Show all comments
+                    </a>
+                </div>
+            }
 
         </div>
+
+        <form asp-controller="Home" asp-action="AddPostComment">
+
+            <div class="flex items-center gap-1 border-t border-gray-100 p-2.5 sm:px-4 sm:py-3">
+                <img src="~/images/avatar/user.png" class="h-6 w-6 rounded-full" />
+
+                <input type="hidden" name="postId" value="@Model.Id" />
+                <div class="relative h-10 flex-1 overflow-hidden">
+                    <textarea name="content" placeholder="Add Comment...."
+                              rows="1"
+                              class="w-full resize-none !bg-transparent px-4 py-2 focus:!border-transparent focus:!ring-transparent"></textarea>
+                </div>
+
+                <button type="submit" class="bg-secondery rounded-full px-3.5 py-1.5 text-sm">Comment</button>
+            </div>
+        </form>
     </div>
 </div>
