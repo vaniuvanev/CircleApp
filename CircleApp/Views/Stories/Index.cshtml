@@ -1,0 +1,49 @@
+﻿<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
+    <div class="mx-auto max-w-[1065px] gap-12 lg:flex 2xl:gap-16" id="js-oversized">
+        <div class="mx-auto max-w-[680px]">
+            @* stories *@
+            <div class="mb-8">
+                <h3 class="hidden text-2xl font-extrabold text-black">Stories</h3>
+
+                <div class="relative" tabindex="-1" uk-slider="auto play: true;finite: true" uk-lightbox="">
+                    <div class="uk-slider-container py-5">
+                        <ul class="uk-slider-items w-[calc(100%+14px)]" uk-scrollspy="target: > li; cls: uk-animation-scale-up; delay: 20;repeat:true">
+
+                            <li class="md:pr-3" uk-scrollspy-class="uk-animation-fade">
+                                <div class="relative grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-dashed border-slate-300 bg-slate-200 md:h-16 md:w-16"
+                                     uk-toggle="target: #create-story">
+                                    <ion-icon name="camera" class="text-2xl"></ion-icon>
+                                </div>
+                            </li>
+
+                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
+                                <a href="~/images/avatar/user.png">
+                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
+                                        <img src="~/images/avatar/user.png" />
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
+                                <a href="~/images/avatar/user.png">
+                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
+                                        <img src="~/images/avatar/user.png" />
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
+                                <a href="~/images/avatar/user.png">
+                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
+                                        <img src="~/images/avatar/user.png" />
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="pr-2 md:pr-3">
+                                <div class="h-12 w-12 animate-pulse rounded-full bg-slate-200/60 md:h-16 md:w-16"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

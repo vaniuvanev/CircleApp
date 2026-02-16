@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\avatar\" />
+    <Folder Include="wwwroot\images\stories\" />
     <Folder Include="wwwroot\images\placeholders\" />
   </ItemGroup>
 

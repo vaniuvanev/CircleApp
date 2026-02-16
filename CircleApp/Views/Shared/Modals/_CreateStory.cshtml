@@ -1,4 +1,6 @@
-﻿<div class="hidden lg:p-20" id="create-story" uk-modal="">
+﻿@model StoryVM
+
+<div class="hidden lg:p-20" id="create-story" uk-modal="">
     <div class="uk-modal-dialog tt relative mx-auto w-full overflow-hidden rounded-lg bg-white p-7 shadow-xl md:w-[520px]">
 
         <div class="-m-7 mb-0 border-b py-3 text-center dark:border-slate-700">
@@ -11,16 +13,20 @@
         </div>
 
         <div class="mt-7 space-y-5">
-            <form>
+            <form asp-controller="Stories" asp-action="CreateStory" enctype="multipart/form-data">
                 <div>
                     <div class="w-full h-72 relative border1 rounded-lg overflow-hidden bg-[url('../images/ad_pattern.png')] bg-repeat">
                         <label class="-translate-x-1/2 absolute bottom-0 left-1/2 z-10 flex w-full cursor-pointer flex-col items-center justify-center bg-gradient-to-t from-gray-700/60 pb-6 pt-10">
-                            <input id="createStatusUrl" name="uploadedContent" type="file" accept="image/png, image/jpeg" />
+                            <input id="storyUpload"
+                                   name="image"
+                                   type="file"
+                                   accept="image/png, image/jpeg" hidden />
+
                             <ion-icon name="image" class="text-3xl text-teal-600"></ion-icon>
-                            <span class="mt-2 text-white">Browse to Upload image</span>
+                            <span id="storyUploadBtn" class="mt-2 text-white">Browse to Upload image</span>
 
                         </label>
-                        <img />
+                        <img id="storyPreview" />
                     </div>
                 </div>
                 <div class="flex items-center justify-between">
@@ -35,3 +41,24 @@
 
     </div>
 </div>
+
+<script>
+    document.getElementById('storyUploadBtn').addEventListener('click', () => {
+        document.getElementById('storyUpload').click();
+    });
+
+    document.getElementById('storyUpload').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const storyPreview = document.getElementById('storyPreview');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                storyPreview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        } else {
+            storyPreview.src = "";
+        }
+    });
+</script>
