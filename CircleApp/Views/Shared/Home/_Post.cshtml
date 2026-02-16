@@ -14,6 +14,7 @@
     bool isFavorited = Model.Favorites.Any(n => n.UserId == 1);
     bool isLiked = Model.Likes.Any(n => n.UserId == 1);
     bool isPrivate = Model.IsPrivate == true && Model.UserId == 1;
+    bool isReported = Model.Reports.Any(n => n.UserId == 1);
 }
 
 <div class="border1 rounded-xl bg-white text-sm font-medium shadow-sm">
@@ -43,21 +44,25 @@
                         </button>
                     </form>
                     <hr>
+
+                    <form asp-controller="Home" asp-action="Delete">
+                        <input type="hidden" name="postId" />
+                        <button type="submit" class="icon-link text-red-400 hover:!bg-red-50">
+                            <ion-icon name="trash-bin-outline"></ion-icon>  Delete Post
+                        </button>
+                    </form>
                 }
 
+                @if (!isReported)
+                {
+                    <form asp-controller="Home" asp-action="AddPostReport">
+                        <input type="hidden" name="postId" value="@Model.Id" />
+                        <button type="submit" class="icon-link hover:!bg-red-50">
+                            <ion-icon class="shrink-0 text-xl" name="flag-outline"></ion-icon>  Report
+                        </button>
+                    </form>
+                }
 
-                <form asp-controller="Home" asp-action="Delete">
-                    <input type="hidden" name="postId" />
-                    <button type="submit" class="icon-link text-red-400 hover:!bg-red-50">
-                        <ion-icon name="trash-bin-outline"></ion-icon>  Delete Post
-                    </button>
-                </form>
-                <form asp-controller="Home" asp-action="Report">
-                    <input type="hidden" name="postId" />
-                    <button type="submit" class="icon-link hover:!bg-red-50">
-                        <ion-icon class="shrink-0 text-xl" name="flag-outline"></ion-icon>  Report
-                    </button>
-                </form>
             </div>
         </div>
     </div>
