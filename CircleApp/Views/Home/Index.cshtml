@@ -50,7 +50,7 @@
                     <partial name="Sidebar/_SuggestedFriends" />
                 </div>
                 <div class="box border1 p-5 px-6">
-                    <partial name="Sidebar/_TrendsForYou" />
+                    @await Component.InvokeAsync("Hashtags")
                 </div>
             </div>
         </div>
