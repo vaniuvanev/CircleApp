@@ -1,4 +1,6 @@
-﻿<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
+﻿@model List<Story>
+
+<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
     <div class="mx-auto max-w-[1065px] gap-12 lg:flex 2xl:gap-16" id="js-oversized">
         <div class="mx-auto max-w-[680px]">
             @* stories *@
@@ -16,27 +18,17 @@
                                 </div>
                             </li>
 
-                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
-                                        <img src="~/images/avatar/user.png" />
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
-                                        <img src="~/images/avatar/user.png" />
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
-                                        <img src="~/images/avatar/user.png" />
-                                    </div>
-                                </a>
-                            </li>
+                            @foreach (var story in Model)
+                            {
+                                <li class="pr-2 duration-300 hover:scale-[1.15] hover:-rotate-2 md:pr-3">
+                                    <a href="@story.ImageUrl">
+                                        <div class="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white shadow md:h-16 md:w-16 md:border-4">
+                                            <img src="@story.User.ProfilePictureUrl" />
+                                        </div>
+                                    </a>
+                                </li>
+                            }
+
                             <li class="pr-2 md:pr-3">
                                 <div class="h-12 w-12 animate-pulse rounded-full bg-slate-200/60 md:h-16 md:w-16"></div>
                             </li>
