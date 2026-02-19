@@ -1,0 +1,35 @@
+﻿@model List<Post>
+
+<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
+    <div class="mx-auto max-w-[1065px] gap-12 lg:flex 2xl:gap-16" id="js-oversized">
+        <div class="mx-auto max-w-[680px]">
+
+            <div class="mx-auto flex-1 space-y-3 md:max-w-[580px] xl:space-y-6">
+
+                @if (Model.Count == 0)
+                {
+                    <div class="border1 space-y-4 rounded-xl bg-white p-2 text-sm font-medium shadow-sm md:p-4" style="width: 580px;">
+                        Currently, there are no favorited posts available.
+                    </div>
+                }
+                else
+                {
+                    @foreach (var post in Model)
+                    {
+                        <partial name="Home/_Post" model="post" />
+                    }
+                }
+            </div>
+        </div>
+        <div class="flex-1">
+            <div class="sm:grid-cols-2 lg:space-y-4 lg:pb-8 max-lg:grid max-lg:gap-6">
+                <div class="box p-5 px-6">
+                    <partial name="Sidebar/_SuggestedFriends" />
+                </div>
+                <div class="box border1 p-5 px-6">
+                    @await Component.InvokeAsync("Hashtags")
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
