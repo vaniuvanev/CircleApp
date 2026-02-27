@@ -15,6 +15,10 @@
     bool isLiked = Model.Likes.Any(n => n.UserId == 1);
     bool isPrivate = Model.IsPrivate == true && Model.UserId == 1;
     bool isReported = Model.Reports.Any(n => n.UserId == 1);
+
+    string defaultUserPicture = "~/images/avatar/user.png";
+
+    bool showAllComments = ViewData["ShowAllComment"] as bool? ?? false;
 }
 
 <div class="border1 rounded-xl bg-white text-sm font-medium shadow-sm">
@@ -22,7 +26,7 @@
     @* Post heading *@
     <div class="flex gap-3 p-2.5 text-sm font-medium sm:p-4">
         <a>
-            <img src="@(Model.User.ProfilePictureUrl ?? "~/images/avatar/user.png")" class="h-9 w-9 rounded-full" />
+            <img src="@(!string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/"+Model.User.ProfilePictureUrl) : defaultUserPicture)" class="h-9 w-9 rounded-full" />
         </a>
         <div class="flex-1">
             <a>
@@ -65,7 +69,7 @@
     </div>
 
     @* Post content *@
-    <a>
+    <a asp-controller="Home" asp-action="Details" asp-route-postId="@Model.Id">
         <div class="w-full p-2.5 pt-0 sm:px-4">
             <p class="font-normal">
                 @Model.Content
@@ -75,9 +79,9 @@
 
     @if (!string.IsNullOrEmpty(Model.ImageUrl))
     {
-        <a>
-            <div class="relative h-full w-full sm:px-4 lg:h-96">
-                <img src="@Model.ImageUrl" class="h-full w-full object-cover sm:rounded-lg" />
+        <a asp-controller="Home" asp-action="Details" asp-route-postId="@Model.Id">
+            <div class="relative h-full w-full">
+                <img src="@Url.Content("~/"+Model.ImageUrl)" class="h-full w-full object-cover sm:rounded-lg" />
             </div>
         </a>
     }
@@ -128,7 +132,9 @@
 
         <div class="relative space-y-3 border-t border-gray-100 p-2.5 font-normal">
 
-            @foreach (var comment in Model.Comments.OrderByDescending(n => n.DateCreated).Take(3))
+            @foreach (var comment in showAllComments
+            ? Model.Comments.OrderByDescending(n => n.DateCreated)
+            : Model.Comments.OrderByDescending(n => n.DateCreated).Take(2))
             {
                 TimeSpan commentTimeSpanSincePosted = DateTime.UtcNow.Subtract(comment.DateCreated);
 
@@ -142,7 +148,7 @@
 
                 <div class="relative flex items-start gap-3">
                     <a>
-                        <img src="@(comment.User.ProfilePictureUrl ?? "~/images/avatar/user.png")" class="mt-1 h-6 w-6 rounded-full" />
+                        <img src="@(!string.IsNullOrEmpty(comment.User.ProfilePictureUrl) ? Url.Content("~/"+comment.User.ProfilePictureUrl) : defaultUserPicture)" class="mt-1 h-6 w-6 rounded-full" />
                     </a>
                     <div class="flex-1">
                         <div class="justify-content-between flex">
@@ -168,10 +174,10 @@
                 </div>
             }
 
-            @if (Model.Comments.Count >= 3)
+            @if (Model.Comments.Count >= 3 && !showAllComments)
             {
                 <div class="p-1.5">
-                    <a>
+                    <a asp-controller="Home" asp-action="Details" asp-route-postId="@Model.Id">
                         Show all comments
                     </a>
                 </div>
