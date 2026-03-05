@@ -1,4 +1,13 @@
-﻿<header class="z-[100] h-[--m-top] sky-50 fixed left-0 top-0 flex w-full items-center border-b border-slate-200 bg-white/80 backdrop-blur-xl">
+﻿@inject UserManager<User> UserManager;
+
+@{
+    var loggedInUser = await UserManager.GetUserAsync(User);
+    var userName = loggedInUser?.UserName;
+    var fullName = loggedInUser?.FullName;
+    var profilePictureUrl = loggedInUser?.ProfilePictureUrl;
+}
+
+<header class="z-[100] h-[--m-top] sky-50 fixed left-0 top-0 flex w-full items-center border-b border-slate-200 bg-white/80 backdrop-blur-xl">
     <div class="lg:w-[--w-side-sm] 2xl:w-[--w-side]">
         <div class="flex items-center gap-1">
             <button uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"
@@ -53,16 +62,16 @@
                 </div>
 
                 <div class="bg-secondery relative shrink-0 cursor-pointer rounded-full">
-                    <img src="~/images/avatar/user.png" class="h-7 w-7 shrink-0 rounded-full shadow sm:h-9 sm:w-9" />
+                    <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Url.Content(profilePictureUrl))" class="h-7 w-7 shrink-0 rounded-full shadow sm:h-9 sm:w-9" />
                 </div>
                 <div class="border2 hidden w-64 rounded-lg bg-white drop-shadow-xl" uk-drop="offset:6;pos: bottom-right;animate-out: true;">
 
                     <a>
                         <div class="flex items-center gap-4 p-4 py-5">
-                            <img src="~/images/avatar/user.png" class="h-10 w-10 rounded-full shadow" />
+                            <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Url.Content(profilePictureUrl))" " class="h-10 w-10 rounded-full shadow" />
                             <div class="flex-1">
-                                <h4 class="text-sm font-medium text-black">Ervis Trupja</h4>
-                                <div class="font-light/70 mt-1 text-sm text-blue-600">ervistrupja</div>
+                                <h4 class="text-sm font-medium text-black">@fullName</h4>
+                                <div class="font-light/70 mt-1 text-sm text-blue-600">@userName</div>
                             </div>
                         </div>
                     </a>
@@ -74,10 +83,9 @@
                             </div>
                         </a>
                         <hr />
-                        <a>
+                        <a asp-controller="Authentication" asp-action="Logout">
                             <div class="flex items-center gap-2.5 rounded-md p-2 px-2.5 hover:bg-secondery">
                                 <ion-icon name="exit-outline" class="text-lg"></ion-icon> Log Out
-
                             </div>
                         </a>
                     </nav>

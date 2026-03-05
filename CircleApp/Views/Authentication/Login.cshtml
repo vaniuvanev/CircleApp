@@ -1,4 +1,6 @@
-﻿<div class="sm:flex">
+﻿@model LoginVM;
+
+<div class="sm:flex">
     @*form section*@
     <div class="relative z-10 flex min-h-screen w-full items-center bg-white p-10 pt-10 shadow-xl md:w-96 lg:w-[580px]">
 
@@ -9,17 +11,20 @@
                 <p class="text-sm font-normal text-gray-700">If you have not signed up yet. <a asp-controller="Authentication" asp-action="Register" class="text-blue-700">Register here!</a></p>
             </div>
 
-            <form method="post" class="space-y-7 text-sm font-medium text-black">
+            <form asp-controller="Authentication" asp-action="Login" method="post" class="space-y-7 text-sm font-medium text-black">
+                <div class="col-span-2 text-red-500" asp-validation-summary="ModelOnly"></div>
                 <div>
-                    <label for="email">Email address</label>
+                    <label asp-for="Email">Email address</label>
                     <div class="mt-2.5">
-                        <input id="email" name="email" type="email" placeholder="Email" required="" class="!w-full" />
+                        <input asp-for="Email" id="email" name="email" type="email" placeholder="Email" required="" class="!w-full" />
+                        <span asp-validation-for="Email" class="mt-1 text-xs text-red-500"></span>
                     </div>
                 </div>
                 <div>
-                    <label for="password">Password</label>
+                    <label asp-for="Password">Password</label>
                     <div class="mt-2.5">
-                        <input id="password" name="password" type="password" placeholder="***" required="" class="!w-full" />
+                        <input asp-for="Password" id="password" name="password" type="password" placeholder="***" required="" class="!w-full" />
+                        <span asp-validation-for="Password" class="mt-1 text-xs text-red-500"></span>
                     </div>
                 </div>
 
