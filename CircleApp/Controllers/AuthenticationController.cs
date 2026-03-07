@@ -13,6 +13,7 @@ namespace CircleApp.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+
         public AuthenticationController(UserManager<User> userManager,
             SignInManager<User> signInManager)
         {
@@ -20,7 +21,7 @@ namespace CircleApp.Controllers
             _signInManager = signInManager;
         }
 
-        public async Task<IActionResult> Login()
+        public IActionResult Login()
         {
             return View();
         }
@@ -31,19 +32,19 @@ namespace CircleApp.Controllers
             if (!ModelState.IsValid)
                 return View(loginVM);
 
-            var existingUser = await _userManager.FindByEmailAsync(loginVM.Email);
-            if (existingUser == null)
+            var user = await _userManager.FindByEmailAsync(loginVM.Email);
+
+            if (user == null)
             {
-                ModelState.AddModelError("", "Invalid email or password. Please, try again");
+                ModelState.AddModelError("", "Invalid email or password");
                 return View(loginVM);
             }
 
-            var existingUserClaims = await _userManager.GetClaimsAsync(existingUser);
-            if (!existingUserClaims.Any(c => c.Type == CustomClaim.FullName))
-                await _userManager.AddClaimAsync(existingUser, new Claim(CustomClaim.FullName, existingUser.FullName));
-
-            var result = await _signInManager.PasswordSignInAsync(existingUser.UserName, loginVM.Password, false, false);
-
+            var result = await _signInManager.PasswordSignInAsync(
+                user.UserName!,
+                loginVM.Password,
+                false,
+                false);
             if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
 
@@ -51,7 +52,7 @@ namespace CircleApp.Controllers
             return View(loginVM);
         }
 
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
             return View();
         }
@@ -62,6 +63,14 @@ namespace CircleApp.Controllers
             if (!ModelState.IsValid)
                 return View(registerVM);
 
+            var existingUser = await _userManager.FindByEmailAsync(registerVM.Email);
+
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "Email already exists");
+                return View(registerVM);
+            }
+
             var newUser = new User()
             {
                 FullName = $"{registerVM.FirstName} {registerVM.LastName}",
@@ -69,84 +78,67 @@ namespace CircleApp.Controllers
                 UserName = registerVM.Email
             };
 
-            var existingUser = await _userManager.FindByEmailAsync(registerVM.Email);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError("Email", "Email already exists");
-                return View(registerVM);
-            }
-
             var result = await _userManager.CreateAsync(newUser, registerVM.Password);
 
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser, AppRoles.User);
-                await _userManager.AddClaimAsync(newUser, new Claim(CustomClaim.FullName, newUser.FullName));
-                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                await _userManager.AddClaimAsync(newUser,
+                    new Claim(CustomClaim.FullName, newUser.FullName));
+
+                await _signInManager.SignInAsync(newUser, false);
+
                 return RedirectToAction("Index", "Home");
             }
 
             foreach (var error in result.Errors)
-            {
                 ModelState.AddModelError("", error.Description);
-            }
-
             return View(registerVM);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordVM updatePasswordVM)
+        public IActionResult ExternalLogin(string provider)
         {
-            if (updatePasswordVM.NewPassword != updatePasswordVM.ConfirmPassword)
-            {
-                TempData["PasswordError"] = "Passwords do not match";
-                TempData["ActiveTab"] = "Password";
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Authentication");
 
-                return RedirectToAction("Index", "Settings");
-            }
+            var properties = _signInManager
+                .ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
-            var loggedInUser = await _userManager.GetUserAsync(User);
-            var isCurrentPasswordValid = await _userManager.CheckPasswordAsync(loggedInUser, updatePasswordVM.CurrentPassword);
-
-            if (!isCurrentPasswordValid)
-            {
-                TempData["PasswordError"] = "Current password is invalid";
-                TempData["ActiveTab"] = "Password";
-                return RedirectToAction("Index", "Settings");
-            }
-
-            var result = await _userManager.ChangePasswordAsync(loggedInUser, updatePasswordVM.CurrentPassword, updatePasswordVM.NewPassword);
-
-            if (result.Succeeded)
-            {
-                TempData["PasswordSuccess"] = "Password updated successfully";
-                TempData["ActiveTab"] = "Password";
-                await _signInManager.RefreshSignInAsync(loggedInUser);
-            }
-
-            return RedirectToAction("Index", "Settings");
+            return Challenge(properties, provider);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateProfile(UpdateProfileVM profileVM)
+        public async Task<IActionResult> ExternalLoginCallback()
         {
-            var loggedInUser = await _userManager.GetUserAsync(User);
-            if (loggedInUser == null)
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
                 return RedirectToAction("Login");
-
-            loggedInUser.FullName = profileVM.FullName;
-            loggedInUser.UserName = profileVM.UserName;
-            loggedInUser.Bio = profileVM.Bio;
-
-            var result = await _userManager.UpdateAsync(loggedInUser);
-            if (!result.Succeeded)
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (email == null)
             {
-                TempData["UserProfileError"] = "User profile could not be updated";
-                TempData["ActiveTab"] = "Profile";
+                TempData["Error"] = "Email not received from external provider.";
+                return RedirectToAction("Login");
             }
 
-            await _signInManager.RefreshSignInAsync(loggedInUser);
-            return RedirectToAction("Index", "Settings");
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    UserName = email,
+                    FullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email,
+                    EmailConfirmed = true
+                };
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                    return RedirectToAction("Login");
+                await _userManager.AddToRoleAsync(user, AppRoles.User);
+                await _userManager.AddClaimAsync(user,
+                    new Claim(CustomClaim.FullName, user.FullName));
+            }
+
+            await _signInManager.SignInAsync(user, false);
+
+            return RedirectToAction("Index", "Home");
         }
 
         [Authorize]
