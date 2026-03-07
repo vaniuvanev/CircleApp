@@ -1,0 +1,72 @@
+﻿@model GetUserProfileVM
+
+<main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
+
+    <div class="mx-auto max-w-[1065px] max-lg:-m-2.5">
+        <div class="bg-white shadow lg:-mt-10 lg:rounded-b-xl">
+            <div class="relative h-8 w-full overflow-hidden lg:h-8"></div>
+            <div class="flex flex-row items-center p-3">
+                <div class="mr-4 flex-shrink-0">
+                    <div class="relative h-28 w-28 lg:h-28 lg:w-28">
+                        <div class="relative shrink-0 overflow-hidden rounded-full border-gray-100 md:border-[6px]">
+                            <img src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ?
+                                Url.Content("~/images/avatar/user.png") :
+                                Url.Content("~/"+Model.User.ProfilePictureUrl))" />
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-black md:text-3xl">@Model.User.FullName</h3>
+                    <p class="mt-2 text-gray-500">@Model.User.UserName</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 flex gap-10 2xl:gap-12 max-lg:flex-col" id="js-oversized">
+            <div class="flex-1 space-y-3 xl:space-y-6">
+                @foreach (var post in Model.Posts)
+                {
+                    <partial name="Home/_Post" model="post"
+                             view-data='new ViewDataDictionary(ViewData)
+                            {
+                                { "ShowAllComment", false },
+                                {"ShowDetails", false }
+                            }' />
+                }
+            </div>
+            <div class="lg:w-[400px]">
+                <div class="sm:grid-cols-2 lg:space-y-4 lg:pb-8 max-lg:grid max-lg:gap-6"
+                     uk-sticky="media: 1024; end: #js-oversized; offset: 80">
+                    <div class="box p-5 px-6">
+                        <div class="items-ce flex justify-between text-black">
+
+                            <h3 class="text-lg font-bold">
+                                Friends
+                                <span class="mt-0. block text-sm font-normal text-gray-500"> 20 friends </span>
+                            </h3>
+
+                        </div>
+
+                        <div class="mb-2 mt-4 grid grid-cols-3 gap-2 gap-y-5 text-center text-sm">
+                            <div>
+                                <div class="relative aspect-square w-full overflow-hidden rounded-lg">
+                                    <img src="~/images/avatar/user.png" class="inset-0 h-full w-full object-cover" />
+                                </div>
+
+                                <div class="mt-2 line-clamp-1">Ervis Trupja</div>
+                            </div>
+
+                            <div>
+                                <div class="relative aspect-square w-full overflow-hidden rounded-lg">
+                                    <img src="~/images/avatar/user.png" class="inset-0 h-full w-full object-cover" />
+                                </div>
+
+                                <div class="mt-2 line-clamp-1">Ervis Trupja</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
