@@ -45,6 +45,7 @@ namespace CircleApp.Controllers
                 loginVM.Password,
                 false,
                 false);
+
             if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
 
@@ -93,6 +94,7 @@ namespace CircleApp.Controllers
 
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
+
             return View(registerVM);
         }
 
@@ -109,9 +111,12 @@ namespace CircleApp.Controllers
         public async Task<IActionResult> ExternalLoginCallback()
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
             if (info == null)
                 return RedirectToAction("Login");
+
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
             if (email == null)
             {
                 TempData["Error"] = "Email not received from external provider.";
@@ -119,6 +124,7 @@ namespace CircleApp.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(email);
+
             if (user == null)
             {
                 user = new User
@@ -128,10 +134,14 @@ namespace CircleApp.Controllers
                     FullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email,
                     EmailConfirmed = true
                 };
+
                 var result = await _userManager.CreateAsync(user);
+
                 if (!result.Succeeded)
                     return RedirectToAction("Login");
+
                 await _userManager.AddToRoleAsync(user, AppRoles.User);
+
                 await _userManager.AddClaimAsync(user,
                     new Claim(CustomClaim.FullName, user.FullName));
             }

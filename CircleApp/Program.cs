@@ -6,23 +6,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
+
+// Controllers
 builder.Services.AddControllersWithViews();
+
 // Database
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-//Services configuration
+
+// Services
 builder.Services.AddScoped<IPostsService, PostsService>();
 builder.Services.AddScoped<IHashtagsService, HashtagsService>();
 builder.Services.AddScoped<IStoriesService, StoriesService>();
 builder.Services.AddScoped<IFilesService, FilesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
-//Identity configuration
+
+// Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
-    //Password settings
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
@@ -31,12 +34,14 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+
 // Cookie configuration
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Authentication/Login";
     options.AccessDeniedPath = "/Authentication/AccessDenied";
 });
+
 // Authentication providers
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
@@ -47,9 +52,11 @@ builder.Services.AddAuthentication()
         options.Scope.Add("email");
         options.Scope.Add("profile");
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
 // Seed database
 using (var scope = app.Services.CreateScope())
 {
@@ -68,3 +75,17 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();   // IMPORTANT
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
