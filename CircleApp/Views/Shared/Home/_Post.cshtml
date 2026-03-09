@@ -1,7 +1,7 @@
 ﻿@using System.Security.Claims;
 @model Post
 
-@{
+@{ 
     int loggedInUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int result) ? result : 0;
 
     TimeSpan timeSpanSincePosted = DateTime.UtcNow.Subtract(Model.DateCreated);
@@ -23,13 +23,13 @@
     bool showDetails = ViewData["ShowDetails"] as bool? ?? true;
 }
 
-<div class="border1 rounded-xl bg-white text-sm font-medium shadow-sm">
+<div id="post-@Model.Id" class="border1 rounded-xl bg-white text-sm font-medium shadow-sm">
 
     @* Post heading *@
     <div class="flex gap-3 p-2.5 text-sm font-medium sm:p-4">
         <a asp-controller="Users" asp-action="Details" asp-route-userId="@Model.UserId">
-            <img src="@(!string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ?
-        Url.Content("~/"+Model.User.ProfilePictureUrl) :
+            <img src="@(!string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? 
+        Url.Content("~/"+Model.User.ProfilePictureUrl) : 
         Url.Content("~/images/avatar/user.png"))" class="h-9 w-9 rounded-full" />
         </a>
         <div class="flex-1">
@@ -96,8 +96,9 @@
 
         <div class="flex items-center gap-2.5">
             <form asp-controller="Home" asp-action="TogglePostLike">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="postId" value="@Model.Id" />
-                <button type="submit" class="button-icon @(isLiked ? "text-red-500 bg-red-100" : "")">
+                <button type="submit" class="button-icon like-button @(isLiked ? "text-red-500 bg-red-100" : "")">
                     <ion-icon class="text-lg"
                               name="@(isLiked ? "heart" : "heart-outline")"></ion-icon>
                 </button>
@@ -120,7 +121,7 @@
         <div class="flex items-center gap-2">
             <form asp-controller="Home" asp-action="TogglePostFavorite">
                 <input type="hidden" name="postId" value="@Model.Id" />
-                <button type="submit" class="button-icon ml-auto @(isFavorited ? "text-orange-500 bt-orange-100":"")">
+                <button type="submit" class="button-icon favorite-button ml-auto @(isFavorited ? "text-orange-500 bt-orange-100":"")">
                     <ion-icon class="text-lg" name="@(isFavorited ? "bookmark":"bookmark-outline")"></ion-icon>
                 </button>
             </form>
@@ -140,8 +141,8 @@
             <div class="relative space-y-3 border-t border-gray-100 p-2.5 font-normal">
 
                 @foreach (var comment in showAllComments
-               ? Model.Comments.OrderByDescending(n => n.DateCreated)
-               : Model.Comments.OrderByDescending(n => n.DateCreated).Take(2))
+                   ? Model.Comments.OrderByDescending(n => n.DateCreated)
+                   : Model.Comments.OrderByDescending(n => n.DateCreated).Take(2))
                 {
                     TimeSpan commentTimeSpanSincePosted = DateTime.UtcNow.Subtract(comment.DateCreated);
 
@@ -169,8 +170,10 @@
                                     @comment.Content
                                 </p>
 
-                                <form asp-controller="Home" asp-action="RemovePostComment">
+                                <form asp-controller="Home" asp-action="RemovePostComment" class="remove-comment-form">
+                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="commentId" value="@comment.Id" />
+                                    <input type="hidden" name="postId" value="@comment.PostId" />
                                     <button type="submit" class="ml-2 text-xs text-red-500" title="Remove post comment">
                                         <ion-icon name="trash-outline"></ion-icon>
                                     </button>
@@ -192,8 +195,8 @@
 
             </div>
 
-            <form asp-controller="Home" asp-action="AddPostComment">
-
+            <form asp-controller="Home" asp-action="AddPostComment" class="add-comment-form">
+                @Html.AntiForgeryToken()
                 <div class="flex items-center gap-1 border-t border-gray-100 p-2.5 sm:px-4 sm:py-3">
                     <a asp-controller="Users" asp-action="Detalis" asp-route-userId="@Model.UserId">
                         <img src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Url.Content(Model.User.ProfilePictureUrl))" class="h-6 w-6 rounded-full" />
