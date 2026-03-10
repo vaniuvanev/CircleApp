@@ -1,4 +1,4 @@
-﻿@using System.Security.Claims;
+﻿@using System.Security.Claims; 
 @model FriendshipVM;
 
 <main id="site__main" class="h-[calc(100vh-var(--m-top))] mt-[--m-top] p-2.5 xl:ml-[--w-side-sm] 2xl:ml-[--w-side]">
@@ -18,8 +18,8 @@
                 @foreach (var _friendship in Model.Friends)
                 {
                     var friend = _friendship.SenderId == int.Parse(User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)) ?
-                    _friendship.Receiver :
-                    _friendship.Sender;
+                _friendship.Receiver :
+                _friendship.Sender;
 
                     <div class="box flex space-x-4 rounded-md p-4 md:items-center">
 

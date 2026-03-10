@@ -2,6 +2,7 @@ using CircleApp.Data;
 using CircleApp.Data.Helpers;
 using CircleApp.Data.Models;
 using CircleApp.Data.Services;
+using CircleApp.Data.Hubs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Services
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
 builder.Services.AddScoped<IPostsService, PostsService>();
 builder.Services.AddScoped<IHashtagsService, HashtagsService>();
 builder.Services.AddScoped<IStoriesService, StoriesService>();
@@ -56,6 +58,8 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Seed database
@@ -88,5 +92,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

@@ -1,0 +1,60 @@
+﻿@model List<Notification>
+
+@foreach (var notification in @Model)
+{
+    TimeSpan time = DateTime.UtcNow.Subtract(notification.DateCreated);
+    string displayTxt = time switch
+    {
+        var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+        var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+        var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+        _ => "Just now"
+    };
+
+    string iconName = notification.Type switch
+    {
+        NotificationType.Favorite => "bookmark-outline",
+        NotificationType.Like => "heart-outline",
+        NotificationType.Comment => "chatbubbles-outline",
+        NotificationType.FriendRequest => "person-add-outline",
+        NotificationType.FriendRequestApproved => "person-outline",
+        _ => "notifications-outline"
+    };
+
+    string redirectUrl = notification.Type switch
+    {
+        NotificationType.FriendRequest => Url.Action("Index", "Friends"),
+        NotificationType.FriendRequestApproved => Url.Action("Index", "Friends"),
+        _ => Url.Action("Details", "Home", new { postId = notification.PostId })
+    };
+
+    <div class="relative flex items-center gap-3 rounded-xl p-2 pr-10 duration-200 hover:bg-secondery @(notification.IsRead ? "" : "bg-teal-500/5")">
+        <div class="flex flex-1 items-center gap-2">
+            <ion-icon name="@iconName" class="text-2xl"></ion-icon>
+            <div>
+                <p>
+                    <a href="@redirectUrl">
+                        @if (notification.IsRead)
+                        {
+                            @notification.Message
+                        }
+                        else
+                        {
+                            <b class="mr1 font-bold">
+                                @notification.Message
+                            </b>
+                        }
+                    </a>
+                </p>
+                <div class="mt-1.5 text-xs text-gray-500">@displayTxt</div>
+
+            </div>
+
+            @if (notification.IsRead == false)
+            {
+                <div class="absolute right-3 top-5 h-2.5 w-2.5 rounded-full bg-teal-600" onclick="setNotificationAsRead(@notification.Id)"></div>
+            }
+
+        </div>
+    </div>
+}
