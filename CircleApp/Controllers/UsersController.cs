@@ -28,12 +28,16 @@ namespace CircleApp.Controllers
         public async Task<IActionResult> Details(int userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
+
             var userPosts = await _userService.GetUserPosts(userId);
+
+            var friends = await _userService.GetUserFriends(userId);
 
             var userProfileVM = new GetUserProfileVM()
             {
                 User = user,
-                Posts = userPosts
+                Posts = userPosts,
+                Friends = friends
             };
 
             return View(userProfileVM);

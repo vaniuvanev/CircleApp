@@ -198,9 +198,9 @@
             <form asp-controller="Home" asp-action="AddPostComment" class="add-comment-form">
                 @Html.AntiForgeryToken()
                 <div class="flex items-center gap-1 border-t border-gray-100 p-2.5 sm:px-4 sm:py-3">
-                    <a asp-controller="Users" asp-action="Detalis" asp-route-userId="@Model.UserId">
+                    @* <a asp-controller="Users" asp-action="Detalis" asp-route-userId="@Model.UserId">
                         <img src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Url.Content(Model.User.ProfilePictureUrl))" class="h-6 w-6 rounded-full" />
-                    </a>
+                    </a> *@
 
 
                     <input type="hidden" name="postId" value="@Model.Id" />

@@ -47,5 +47,17 @@ namespace CircleApp.Data.Services
 
             return allPosts;
         }
+
+        public async Task<List<User>> GetUserFriends(int userId)
+        {
+            var friends = await _appDbContext.Friendships
+                .Include(f => f.Sender)
+                .Include(f => f.Receiver)
+                .Where(f => f.SenderId == userId || f.ReceiverId == userId)
+                .Select(f => f.SenderId == userId ? f.Receiver : f.Sender)
+                .ToListAsync();
+
+            return friends;
+        }
     }
 }

@@ -33,38 +33,73 @@
                             }' />
                 }
             </div>
+            <!-- SIDEBAR -->
             <div class="lg:w-[400px]">
+
                 <div class="sm:grid-cols-2 lg:space-y-4 lg:pb-8 max-lg:grid max-lg:gap-6"
                      uk-sticky="media: 1024; end: #js-oversized; offset: 80">
+
+                    <!-- FRIENDS -->
                     <div class="box p-5 px-6">
-                        <div class="items-ce flex justify-between text-black">
+
+                        <div class="flex items-center justify-between text-black">
 
                             <h3 class="text-lg font-bold">
                                 Friends
-                                <span class="mt-0. block text-sm font-normal text-gray-500"> 20 friends </span>
+
+                                <span class="block text-sm font-normal text-gray-500">
+                                    @Model.FriendsCount friends
+                                </span>
+
                             </h3>
 
                         </div>
 
                         <div class="mb-2 mt-4 grid grid-cols-3 gap-2 gap-y-5 text-center text-sm">
-                            <div>
-                                <div class="relative aspect-square w-full overflow-hidden rounded-lg">
-                                    <img src="~/images/avatar/user.png" class="inset-0 h-full w-full object-cover" />
-                                </div>
 
-                                <div class="mt-2 line-clamp-1">Ervis Trupja</div>
-                            </div>
+                            @if (Model.Friends.Any())
+                            {
+                                @foreach (var friend in Model.Friends.Take(6))
+                                {
+                                    <div>
 
-                            <div>
-                                <div class="relative aspect-square w-full overflow-hidden rounded-lg">
-                                    <img src="~/images/avatar/user.png" class="inset-0 h-full w-full object-cover" />
-                                </div>
+                                        <a asp-controller="Users"
+                                           asp-action="Details"
+                                           asp-route-userId="@friend.Id">
 
-                                <div class="mt-2 line-clamp-1">Ervis Trupja</div>
-                            </div>
+                                            <div class="relative aspect-square w-full overflow-hidden rounded-lg">
+
+                                                <img src="@(
+                                                    string.IsNullOrEmpty(friend.ProfilePictureUrl)
+                                                        ? Url.Content("~/images/avatar/user.png")
+                                                        : Url.Content("~/" + friend.ProfilePictureUrl)
+                                                )"
+                                                     class="inset-0 h-full w-full object-cover" />
+
+                                            </div>
+
+                                            <div class="mt-2 line-clamp-1">
+                                                @friend.FullName
+                                            </div>
+
+                                        </a>
+
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="col-span-3 text-center text-gray-400">
+                                    No friends yet
+                                </p>
+                            }
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
         </div>
     </div>
