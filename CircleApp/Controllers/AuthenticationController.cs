@@ -103,6 +103,61 @@ namespace CircleApp.Controllers
             return View(registerVM);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordVM updatePasswordVM)
+        {
+            if (updatePasswordVM.NewPassword != updatePasswordVM.ConfirmPassword)
+            {
+                TempData["PasswordError"] = "Passwords do not match";
+                TempData["ActiveTab"] = "Password";
+
+                return RedirectToAction("Index", "Settings");
+            }
+
+            var loggedInUser = await _userManager.GetUserAsync(User);
+            var isCurrentPasswordValid = await _userManager.CheckPasswordAsync(loggedInUser, updatePasswordVM.CurrentPassword);
+
+            if (!isCurrentPasswordValid)
+            {
+                TempData["PasswordError"] = "Current password is invalid";
+                TempData["ActiveTab"] = "Password";
+                return RedirectToAction("Index", "Settings");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(loggedInUser, updatePasswordVM.CurrentPassword, updatePasswordVM.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["PasswordSuccess"] = "Password updated successfully";
+                TempData["ActiveTab"] = "Password";
+                await _signInManager.RefreshSignInAsync(loggedInUser);
+            }
+
+            return RedirectToAction("Index", "Settings");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileVM profileVM)
+        {
+            var loggedInUser = await _userManager.GetUserAsync(User);
+            if (loggedInUser == null)
+                return RedirectToAction("Login");
+
+            loggedInUser.FullName = profileVM.FullName;
+            loggedInUser.UserName = profileVM.UserName;
+            loggedInUser.Bio = profileVM.Bio;
+
+            var result = await _userManager.UpdateAsync(loggedInUser);
+            if (!result.Succeeded)
+            {
+                TempData["UserProfileError"] = "User profile could not be updated";
+                TempData["ActiveTab"] = "Profile";
+            }
+
+            await _signInManager.RefreshSignInAsync(loggedInUser);
+            return RedirectToAction("Index", "Settings");
+        }
+
         public IActionResult ExternalLogin(string provider)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Authentication");
